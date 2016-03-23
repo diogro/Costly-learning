@@ -13,7 +13,6 @@ contrast(model, list(treatment = "rotten"), list(treatment = "dog"))
 contrast(model, list(treatment = "fresh"), list(treatment = "dog"))
 
 x = Predict(model, treatment  = levels(data$treatment))
-ggplot(x) + theme_classic()
 pvalues = data.frame( x = c(2, 2, 3, 3),  y = c(2.8, 2.9, 2.9, 2.8))
 odds_ratio = ggplot(data.frame(x), aes(treatment, yhat)) +
     geom_pointrange(aes(ymin = lower, ymax = upper)) +
