@@ -5,6 +5,8 @@ library(cowplot)
 library(magrittr)
 data = read.csv("./exp_escolha.csv")
 
+model <- glm(choice ~ treatment, family=binomial("logit"), data = data)
+
 model = lrm(choice ~ treatment, data)
 contrast(model, list(treatment = "rotten"), list(treatment = "fresh"))
 contrast(model, list(treatment = "rotten"), list(treatment = "dog"))
