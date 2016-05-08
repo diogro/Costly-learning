@@ -13,19 +13,25 @@ contrast(model, list(treatment = "rotten"), list(treatment = "dog"))
 contrast(model, list(treatment = "fresh"), list(treatment = "dog"))
 
 x = Predict(model, treatment  = levels(data$treatment))
-pvalues = data.frame( x = c(2, 2, 3, 3),  y = c(2.8, 2.9, 2.9, 2.8))
-odds_ratio = ggplot(data.frame(x), aes(treatment, yhat)) +
+expx = x
+expx[-1] = exp(x[-1])
+pvalues = data.frame( x = c(2, 2, 3, 3),  y = c(15, 16, 16, 15))
+labels = c(seq(0.1, 0.9, 0.1), 1:20)
+labels[!labels %in% c(0.1, 0.2, 0.3, 0.4, 0.5, 1, 2, 3, 4, 5, 10, 20)] = ""
+labels[3] = "0.3"
+odds_ratio = ggplot(data.frame(expx), aes(treatment, yhat)) +
     geom_pointrange(aes(ymin = lower, ymax = upper)) +
-    labs(x = "Treatment", y = "Log odds ratio of choosing rotten cricket") +
-    scale_x_discrete(labels = c("Dog food", "Fresh cricket", "Rotten cricket"), expand = c(0.2, 0)) +
-    scale_y_continuous(breaks = -2:2) +
-    geom_hline(yintercept = 0, linetype =  "dotted") +
+    labs(x = "\n         Treatment", y = "Odds ratio of choosing\n rotten cricket") +
+    scale_x_discrete(labels = c("Dog\nfood", "Fresh\ncricket", "Rotten\ncricket"), expand = c(0.2, 0)) +
+    scale_y_log10(breaks = c(seq(0.1, 0.9, 0.1), 1:20), labels = labels, lim = c(0.1, 20)) + 
+    geom_hline(yintercept = 1, linetype =  "dotted") +
     geom_path(data = pvalues, aes(x, y)) +
-    annotate("text", x = 2.5, y = 3.1, label = "p < 0.01") +
-    annotate("text", x = 0.5, y = 2, label = "Chooses\nrotten") +
-    annotate("text", x = 0.5, y = 0, label = "No\npreference") +
-    annotate("text", x = 0.5, y = -2, label = "Chooses\nfresh") + theme(legend.position = c(0.8, 0.9), text = element_text(size = 20))
-save_plot("./log_odds_ratio_feed_experiment.png", odds_ratio, base_height = 7, base_aspect_ratio = 1.1)
+    annotate("text", x = 2.5, y = 19, label = "p < 0.01") +
+    annotate("text", x = 0.5, y = 4, label = "Chooses\nrotten") +
+    annotate("text", x = 0.5, y = 1, label = "No\npreference") +
+    annotate("text", x = 0.5, y = 0.2, label = "Chooses\nfresh") +
+    theme(legend.position = c(0.8, 0.9))
+save_plot("./odds_ratio_feed_experiment.png", odds_ratio, base_height = 4.5, base_aspect_ratio = 1.1)
 
 
 survival <- data.frame(t(read.csv("./survival.csv")))
@@ -36,9 +42,12 @@ survival = dplyr::filter(survival, Week <= 7)
 m_survival <- melt(survival, id.vars = "Week")
 m_survival$variable <- factor(m_survival$variable, levels = c("Fresh", "Rotten", "Dog"))
 
-survival_plot <- ggplot(m_survival, aes(Week, value, group = variable, color = variable, shape = variable)) +
-    labs(y = "Number of individuals alive") + geom_point(size = 3) + geom_line() +
+survival_plot <- ggplot(m_survival, aes(Week, value, group = variable, color = variable, linetype = variable, shape = variable)) +
+    labs(y = "Number of individuals alive\n") + geom_point(size = 3.5) + geom_line(size = 1.5) +
     scale_color_discrete(name = "Treatment", labels = c("Fresh cricket", "Rotten cricket", "Dog food")) +
     scale_shape_discrete(name = "Treatment", labels = c("Fresh cricket", "Rotten cricket", "Dog food")) +
-    scale_x_continuous(breaks = 0:10) + scale_y_continuous(breaks = seq(15, 27, 2)) + theme(legend.position = c(0.8, 0.9), text = element_text(size = 20))
-save_plot("./survival_feed_experiment.png", survival_plot, base_height = 7, base_aspect_ratio = 1.1)
+    scale_linetype_manual(name = "Treatment", labels = c("Fresh cricket", "Rotten cricket", "Dog food"), values = c("solid", "dotted", "dashed")) +
+    scale_x_continuous(breaks = 0:10) + 
+    scale_y_continuous(breaks = seq(14, 30, 2)) +
+        theme(legend.position = c(0.8, 0.9))
+save_plot("./survival_feed_experiment.png", survival_plot, base_height = 4.5, base_aspect_ratio = 1.1)
