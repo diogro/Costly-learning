@@ -1,8 +1,8 @@
-library(rms)
-library(ggplot2)
-library(reshape2)
-library(cowplot)
-library(magrittr)
+if(!require(rms)){install.packages("rms"); library(rms)}
+if(!require(ggplot2)){install.packages("ggplot2"); library(ggplot2)}
+if(!require(reshape2)){install.packages("reshape2"); library(reshape2)}
+if(!require(cowplot)){install.packages("cowplot"); library(cowplot)}
+if(!require(magrittr)){install.packages("magrittr"); library(magrittr)}
 data = read.csv("./exp_escolha.csv")
 
 model <- glm(choice ~ treatment, family=binomial("logit"), data = data)
@@ -16,7 +16,7 @@ x = Predict(model, treatment  = levels(data$treatment))
 pvalues = data.frame( x = c(2, 2, 3, 3),  y = c(2.8, 2.9, 2.9, 2.8))
 odds_ratio = ggplot(data.frame(x), aes(treatment, yhat)) +
     geom_pointrange(aes(ymin = lower, ymax = upper)) +
-    labs(x = "Treatment", y = "Log odds ratio of choosing rotten") +
+    labs(x = "Treatment", y = "Log odds ratio of choosing rotten cricket") +
     scale_x_discrete(labels = c("Dog food", "Fresh cricket", "Rotten cricket"), expand = c(0.2, 0)) +
     scale_y_continuous(breaks = -2:2) +
     geom_hline(yintercept = 0, linetype =  "dotted") +
@@ -32,6 +32,7 @@ survival <- data.frame(t(read.csv("./survival.csv")))
 names(survival) <- c("Rotten", "Fresh", "Dog")
 rownames(survival) <- NULL
 survival$Week <- 0:10
+survival = dplyr::filter(survival, Week <= 7)
 m_survival <- melt(survival, id.vars = "Week")
 m_survival$variable <- factor(m_survival$variable, levels = c("Fresh", "Rotten", "Dog"))
 
