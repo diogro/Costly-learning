@@ -5,6 +5,7 @@ if(!require(cowplot)){install.packages("cowplot"); library(cowplot)}
 if(!require(magrittr)){install.packages("magrittr"); library(magrittr)}
 data = read.csv("./exp_escolha.csv")
 
+
 model <- glm(choice ~ treatment, family=binomial("logit"), data = data)
 
 model = lrm(choice ~ treatment, data)
@@ -23,7 +24,7 @@ odds_ratio = ggplot(data.frame(expx), aes(treatment, yhat)) +
     geom_pointrange(aes(ymin = lower, ymax = upper)) +
     labs(x = "\n         Treatment", y = "Odds ratio of choosing\n rotten cricket") +
     scale_x_discrete(labels = c("Dog\nfood", "Fresh\ncricket", "Rotten\ncricket"), expand = c(0.2, 0)) +
-    scale_y_log10(breaks = c(seq(0.1, 0.9, 0.1), 1:20), labels = labels, lim = c(0.1, 20)) + 
+    scale_y_log10(breaks = c(seq(0.1, 0.9, 0.1), 1:20), labels = labels, lim = c(0.1, 20)) +
     geom_hline(yintercept = 1, linetype =  "dotted") +
     geom_path(data = pvalues, aes(x, y)) +
     annotate("text", x = 2.5, y = 19, label = "p < 0.01") +
@@ -32,6 +33,7 @@ odds_ratio = ggplot(data.frame(expx), aes(treatment, yhat)) +
     annotate("text", x = 0.5, y = 0.2, label = "Chooses\nfresh") +
     theme(legend.position = c(0.8, 0.9))
 save_plot("./odds_ratio_feed_experiment.png", odds_ratio, base_height = 4.5, base_aspect_ratio = 1.1)
+save_plot("./odds_ratio_feed_experiment.pdf", odds_ratio, base_height = 4.5, base_aspect_ratio = 1.1)
 
 
 survival <- data.frame(t(read.csv("./survival.csv")))
@@ -43,11 +45,34 @@ m_survival <- melt(survival, id.vars = "Week")
 m_survival$variable <- factor(m_survival$variable, levels = c("Fresh", "Rotten", "Dog"))
 
 survival_plot <- ggplot(m_survival, aes(Week, value, group = variable, color = variable, linetype = variable, shape = variable)) +
-    labs(y = "Number of individuals alive\n") + geom_point(size = 3.5) + geom_line(size = 1.5) +
+    labs(y = "Number of individuals alive\n") + geom_point(size = 3.5) + geom_line(size = 1.3) +
     scale_color_discrete(name = "Treatment", labels = c("Fresh cricket", "Rotten cricket", "Dog food")) +
     scale_shape_discrete(name = "Treatment", labels = c("Fresh cricket", "Rotten cricket", "Dog food")) +
-    scale_linetype_manual(name = "Treatment", labels = c("Fresh cricket", "Rotten cricket", "Dog food"), values = c("solid", "dotted", "dashed")) +
-    scale_x_continuous(breaks = 0:10) + 
+    scale_linetype_manual(name = "Treatment", labels = c("Fresh cricket", "Rotten cricket", "Dog food"), values = c("solid", "dotted", "dashed"), guide = FALSE) +
+    scale_x_continuous(breaks = 0:10) +
     scale_y_continuous(breaks = seq(14, 30, 2)) +
         theme(legend.position = c(0.8, 0.9))
 save_plot("./survival_feed_experiment.png", survival_plot, base_height = 4.5, base_aspect_ratio = 1.1)
+save_plot("./survival_feed_experiment.pdf", survival_plot, base_height = 4.5, base_aspect_ratio = 1.1)
+
+
+survival_plot <- ggplot(m_survival, aes(Week, value, group = variable, linetype = variable, shape = variable)) +
+  labs(y = "Number of individuals alive\n") + geom_point(size = 3.5) + geom_line(size = 1.3) +
+  scale_shape_discrete(name = "Treatment", labels = c("Fresh cricket", "Rotten cricket", "Dog food")) +
+  scale_linetype_manual(name = "Treatment", labels = c("Fresh cricket", "Rotten cricket", "Dog food"), values = c("solid", "dotted", "dashed"), guide=FALSE) +
+  scale_x_continuous(breaks = 0:10) +
+  scale_y_continuous(breaks = seq(14, 30, 2)) +
+  theme(legend.position = c(0.8, 0.9))
+save_plot("./survival_feed_experiment_pb.png", survival_plot, base_height = 4.5, base_aspect_ratio = 1.1)
+save_plot("./survival_feed_experiment_pb.pdf", survival_plot, base_height = 4.5, base_aspect_ratio = 1.1)
+
+
+count_plot = ggplot(data, aes(treatment, fill = choice)) + geom_bar() + 
+  scale_fill_grey(name = "Choice", labels = c("Fresh\ncricket", "Rotten\ncricket")) + 
+  labs(x = "Treatment", y = "Number of individuals") + 
+  scale_x_discrete(labels = c("Dog\nfood", "Fresh\ncricket", "Rotten\ncricket")) + 
+  coord_flip() +  theme(legend.position = c(1, 0.8), 
+                        legend.key.height=unit(2, "line"),
+                        plot.margin = unit(c(0.1, 1.1, 0.1, 0.1), "cm"))
+save_plot("./count_plot_pb.pdf", count_plot, base_height = 4.5, base_aspect_ratio = 1.1)
+

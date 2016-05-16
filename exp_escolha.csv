@@ -39,13 +39,11 @@ id,treatment,choice,sex,day
 52,dog,fresh,M,0
 1,rotten,fresh,F,0
 8,fresh,rotten,M,0
-39,dog,rotten,F,0
 24,rotten,rotten,M,0
 97,dog,rotten,F,0
 46,dog,rotten,M,0
 40,rotten,rotten,M,0
 2,fresh,rotten,M,0
-13,dog,fresh,F,0
 98,rotten,rotten,F,0
 67,fresh,fresh,F,0
 3,dog,fresh,F,0
