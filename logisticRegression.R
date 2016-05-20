@@ -5,7 +5,6 @@ if(!require(cowplot)){install.packages("cowplot"); library(cowplot)}
 if(!require(magrittr)){install.packages("magrittr"); library(magrittr)}
 data = read.csv("./exp_escolha.csv")
 
-
 model <- glm(choice ~ treatment, family=binomial("logit"), data = data)
 
 model = lrm(choice ~ treatment, data)
@@ -16,6 +15,7 @@ contrast(model, list(treatment = "fresh"), list(treatment = "dog"))
 x = Predict(model, treatment  = levels(data$treatment))
 expx = x
 expx[-1] = exp(x[-1])
+#expx[2, -1] = 1/expx[2,-1]
 pvalues = data.frame( x = c(2, 2, 3, 3),  y = c(15, 16, 16, 15))
 labels = c(seq(0.1, 0.9, 0.1), 1:20)
 labels[!labels %in% c(0.1, 0.2, 0.3, 0.4, 0.5, 1, 2, 3, 4, 5, 10, 20)] = ""
@@ -32,8 +32,7 @@ odds_ratio = ggplot(data.frame(expx), aes(treatment, yhat)) +
     annotate("text", x = 0.5, y = 1, label = "No\npreference") +
     annotate("text", x = 0.5, y = 0.2, label = "Chooses\nfresh") +
     theme(legend.position = c(0.8, 0.9))
-save_plot("./odds_ratio_feed_experiment.png", odds_ratio, base_height = 4.5, base_aspect_ratio = 1.1)
-save_plot("./odds_ratio_feed_experiment.pdf", odds_ratio, base_height = 4.5, base_aspect_ratio = 1.1)
+save_plot("./odds_ratio_feed_experiment.eps", odds_ratio, base_height = 4.5, base_aspect_ratio = 1.1)
 
 
 survival <- data.frame(t(read.csv("./survival.csv")))
@@ -52,8 +51,7 @@ survival_plot <- ggplot(m_survival, aes(Week, value, group = variable, color = v
     scale_x_continuous(breaks = 0:10) +
     scale_y_continuous(breaks = seq(14, 30, 2)) +
         theme(legend.position = c(0.8, 0.9))
-save_plot("./survival_feed_experiment.png", survival_plot, base_height = 4.5, base_aspect_ratio = 1.1)
-save_plot("./survival_feed_experiment.pdf", survival_plot, base_height = 4.5, base_aspect_ratio = 1.1)
+save_plot("./survival_feed_experiment.eps", survival_plot, base_height = 4.5, base_aspect_ratio = 1.1)
 
 
 survival_plot <- ggplot(m_survival, aes(Week, value, group = variable, linetype = variable, shape = variable)) +
@@ -63,8 +61,7 @@ survival_plot <- ggplot(m_survival, aes(Week, value, group = variable, linetype 
   scale_x_continuous(breaks = 0:10) +
   scale_y_continuous(breaks = seq(14, 30, 2)) +
   theme(legend.position = c(0.8, 0.9))
-save_plot("./survival_feed_experiment_pb.png", survival_plot, base_height = 4.5, base_aspect_ratio = 1.1)
-save_plot("./survival_feed_experiment_pb.pdf", survival_plot, base_height = 4.5, base_aspect_ratio = 1.1)
+save_plot("./survival_feed_experiment_pb.eps", survival_plot, base_height = 4.5, base_aspect_ratio = 1.1)
 
 
 count_plot = ggplot(data, aes(treatment, fill = choice)) + geom_bar() + 
@@ -74,5 +71,5 @@ count_plot = ggplot(data, aes(treatment, fill = choice)) + geom_bar() +
   coord_flip() +  theme(legend.position = c(1, 0.8), 
                         legend.key.height=unit(2, "line"),
                         plot.margin = unit(c(0.1, 1.1, 0.1, 0.1), "cm"))
-save_plot("./count_plot_pb.pdf", count_plot, base_height = 4.5, base_aspect_ratio = 1.1)
+save_plot("./count_plot_pb.eps", count_plot, base_height = 4.5, base_aspect_ratio = 1.1)
 
